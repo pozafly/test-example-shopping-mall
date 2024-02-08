@@ -23,8 +23,24 @@ it('className props로 설정한 css class가 적용된다.', async () => {
 
   // className이란 내부 props이나, state 값을 검증하지 않는다.
   // 렌더링 되는 DOM 구조가 올바르게 변경되었는지 확인한다. -> 최종적으로 사용자가 보는 결과는 DOM
-  console.log(screen);
-  expect(screen.getByPlaceholderText('텍스트를 입력해 주세요.')).toHaveClass(
-    'my-class',
-  );
+  const textInput = screen.getByPlaceholderText('텍스트를 입력해 주세요.');
+  expect(textInput).toHaveClass('my-class');
+});
+
+describe('placeholder', () => {
+  it('기본 placeholder "텍스트를 입력해 주세요."가 노출된다.', async () => {
+    // 기대결과
+    await render(<TextField />);
+    const textInput = screen.getByPlaceholderText('텍스트를 입력해 주세요.');
+
+    expect(textInput).toBeInTheDocument();
+  });
+
+  it('placeholder prop에 따라 placeholder가 변경된다.', async () => {
+    // 기대결과
+    await render(<TextField placeholder="상품명을 입력해 주세요." />);
+    const textInput = screen.getByPlaceholderText('상품명을 입력해 주세요.');
+
+    expect(textInput).toBeInTheDocument();
+  });
 });
