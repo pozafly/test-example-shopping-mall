@@ -4,6 +4,10 @@ import React from 'react';
 import TextField from '@/components/TextField';
 import render from '@/utils/test/render';
 
+// beforeEach(async () => {
+//   await render(<TextField />);
+// });
+
 it('className props로 설정한 css class가 적용된다.', async () => {
   /**
    * Arrange : 테스트를 위한 환경 만들기
@@ -42,5 +46,54 @@ describe('placeholder', () => {
     const textInput = screen.getByPlaceholderText('상품명을 입력해 주세요.');
 
     expect(textInput).toBeInTheDocument();
+  });
+});
+
+describe('TextInput EventHandler 검증', () => {
+  it('텍스트를 입력하면 onChange prop으로 등록한 함수가 호출된다.', async () => {
+    const spy = vi.fn(); // 스파이 함수
+    const { user } = await render(<TextField onChange={spy} />);
+    const textInput = screen.getByPlaceholderText('텍스트를 입력해 주세요.');
+
+    // 유저가 test를 타이핑 하는 것처럼 시뮬레이션 한다.
+    await user.type(textInput, 'test');
+
+    // toHaveBeenCalledWith : 함수가 제대로 호출되었는지의 여부와, value가 test인지를 검증
+    expect(spy).toHaveBeenCalledWith('test');
+  });
+
+  it('Enter 키 입력 시 onEnter props로 등록한 함수가 호출된다', async () => {
+    const spy = vi.fn();
+    const { user } = await render(<TextField onEnter={spy} />);
+    const textInput = screen.getByPlaceholderText('텍스트를 입력해 주세요.');
+
+    await user.type(textInput, 'test{Enter}');
+
+    expect(spy).toHaveBeenCalledWith('test');
+  });
+
+  it('포커스가 활성화되면 onFocus prop으로 등록한 함수가 호출된다.', async () => {
+    const spy = vi.fn();
+    const { user } = await render(<TextField onFocus={spy} />);
+    const textInput = screen.getByPlaceholderText('텍스트를 입력해 주세요.');
+
+    // 포커스 활성화
+    //  -> 탭 키로 인풋 요소로 포커스 이동
+    //  -> 인풋 요소를 클릭했을 때 (0)
+    //  -> textInput.focus()로 직접 발생
+    await user.click(textInput);
+
+    // toHaveBeenCalled : 함수가 호출되었는지의 여부만 본다.
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('포커스가 활성화되면 border 스타일이 추가된다.', async () => {
+    const { user } = await render(<TextField />);
+    const textInput = screen.getByPlaceholderText('텍스트를 입력해 주세요.');
+    await user.click(textInput);
+    expect(textInput).toHaveStyle({
+      borderWidth: 2,
+      borderColor: 'rgba(25, 118, 210)',
+    });
   });
 });
