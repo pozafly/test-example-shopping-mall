@@ -42,6 +42,10 @@ describe('debounce', () => {
   // 타이머 모킹 -> 0.3초 흐른 것으로 타이머 조작 -> spy 함수 호출 확인
   beforeEach(() => {
     vi.useFakeTimers();
+
+    // 시간은 흐르기 때문에 매일 달라짐
+    // -> 테스트 당시의 시간에 의존하는 테스트의 경우 시간을 고정하지 않으면 테스트가 깨질수 있다.
+    // setSystemTime으로 시간을 고정하면 일관된 환경에서 테스트 가능
     vi.setSystemTime(new Date('2024-02-18'));
   });
   afterEach(() => {
